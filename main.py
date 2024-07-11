@@ -13,13 +13,13 @@ class CrawlerThread(threading.Thread):
     def run(self):
         while True:
             try:
-                site = self.work_queue.get(timeout=1)  # Wait for a website to crawl
+                site = self.work_queue.get(timeout=1)
                 if site is None:
                       get_data(self.work_queue)
 
                 try:
                     r = requests.get(site)
-                    r.raise_for_status()  # Raise an HTTPError for bad responses
+                    r.raise_for_status() 
                     try:
                         soup = BeautifulSoup(r.content, 'html.parser')
                     except:
@@ -27,15 +27,11 @@ class CrawlerThread(threading.Thread):
                         continue
 
                     title = soup.find("title").text if soup.find("title") else ""
-
-# Récupérer tous les textes des balises courantes
                     text_elements = soup.find_all(['p', 'div', 'span', 'li', 'blockquote'])
                     text = " ".join([element.get_text(separator=" ", strip=True) for element in text_elements]) if text_elements else ""
 
-                    # Récupérer les métadonnées
                     meta = {meta.attrs.get("name"): meta.attrs.get("content") for meta in soup.find_all("meta") if meta.attrs.get("name")}
 
-                    # Récupérer les en-têtes
                     headers = []
                     for header in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
                         headers.extend([h.get_text(strip=True) for h in soup.find_all(header)])
@@ -52,10 +48,9 @@ class CrawlerThread(threading.Thread):
 
                 except requests.RequestException as e:
                     print(f"Error fetching {site}: {e}")
-                    CrawlerDB().validaded_website(site, "No Title", "No Content", "No Meta")
+                    CrawlerDB().validaded_website(site, "", "", "")
 
-                self.work_queue.task_done()  # Mark task as done
-
+                self.work_queue.task_done()
             except queue.Empty:
                 continue
 
@@ -78,10 +73,7 @@ def startup(num_threads=20):
 
     get_data(work_queue)
     
-    # Wait for all tasks to be done
     work_queue.join()
-
-    # Stop threads
     for _ in range(num_threads):
         work_queue.put(None)
     for thread in threads:
