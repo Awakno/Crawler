@@ -33,6 +33,11 @@ class CrawlerDB:
         for url in queue.find({}):
             site.append(url.get('url'))
         return site
+    def get_all_validated_website(self):
+        site = []
+        for url in already_rq.find({}):
+            site.append(url.get('url'))
+        return site
     def check_double_website(self,link):
         if queue.find_one({"url": link}):
             return True

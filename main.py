@@ -4,6 +4,9 @@ from db.rq import *
 import random
 import threading
 import queue
+from discord import send_webhook
+
+WEBHOOK_URL = "https://discord.com/api/webhooks/1261308590262583307/hv8gEVrMvnroVCugDtAjcOJ2lKQPw6R0mgnZKXohpCW1Ntv2zgLZTrAkBmSUbM9dkIpO"
 
 class CrawlerThread(threading.Thread):
     def __init__(self, work_queue):
@@ -16,6 +19,8 @@ class CrawlerThread(threading.Thread):
                 site = self.work_queue.get(timeout=1)
                 if site is None:
                       get_data(self.work_queue)
+                      send_webhook(WEBHOOK_URL, len(CrawlerDB().get_all_validated_website()))
+
 
                 try:
                     r = requests.get(site)
@@ -61,7 +66,7 @@ def get_data(work_queue):
     for site in QUEUE:
         work_queue.put(site)
 
-def startup(num_threads=20):
+def startup(num_threads=5):
     work_queue = queue.Queue()
     
     # Start threads
