@@ -6,7 +6,7 @@ import threading
 import queue
 from discord import send_webhook
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/1261308590262583307/hv8gEVrMvnroVCugDtAjcOJ2lKQPw6R0mgnZKXohpCW1Ntv2zgLZTrAkBmSUbM9dkIpO"
+WEBHOOK_URL = ""
 
 class CrawlerThread(threading.Thread):
     def __init__(self, work_queue):
